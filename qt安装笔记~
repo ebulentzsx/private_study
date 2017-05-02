@@ -1,0 +1,18 @@
+---git地址以及clone命令
+	git clone http://github.com/ebulentzsx/private_study
+---qt移植资料参考网址
+	http://blog.csdn.net/luliyuan/article/details/52183534
+---tslib编译
+	要注意安装路径，后续移植需要copy相关lib和etc
+	注意交叉编译工具链的配置，和qt保持一致。
+---查找文件的命令
+	find / -name libts-0.0.so.0
+	find [路径] -name [文件名]
+---查看磁盘命令
+	df
+---使用qmake命令时，需要注意环境下默认使用的qmake是哪个版本。
+---tslib移植，出现问题libts-0.0.so.0报错找不到。
+	解决办法：明显是动态库链接缺失。找到库，copy到相应路径。
+		  制造软连接。库文件之间可能有匹配关系，不匹配会段错误。
+---如果出现库找不到错误，可能需要修改×.pro文件
+	在*.pro中要加QT += webkitwidgets
