@@ -1,0 +1,51 @@
+--001----------------------------恢复U盘的容量
+在Windows下的操作：
+1先把u盘插好，
+运行cmd（按住键盘左下角第二个windows键的同时按Ｒ），
+输入diskpart，回车，
+（此时可以再输入list disk，回车，能看到这台电脑的所有磁盘大致情况，u盘一般是磁盘1）
+再输入select disk 1，回车，（disk和1之间必须要有一个空格格开，不明白的可以直接复制这个命令运行即可）
+再输入clean，回车，
+关闭命令行界面。
+2右击桌面上的计算机图标，选择管理，进入磁盘管理，能看到u盘分区是未分配的（黑色），右击，新建分区，一直下一步就OK了。
+
+--002----------------------------基础操作之 编译qt程序简述
+　　1.上位机编译好的可执行文件，以hello为例
+　　在虚拟机的Ubuntu下，写好代码之后，定位到当前目录，执行命令
+　　$ qmake -project //生成工程文件.pro
+　　$ qmake              //生成makefile
+　　$ make                //生成可执行文件hello
+　　注意这些命令是在arm版的qt环境下的编译命令！执行qmake -v可查看其是否是arm版本，使用的是否是arm的库！执行file hello 可以查看hello是否是arm下运行的程序！
+　　2.移植好QT库的开发板
+　　刚开始学，只需要移植最基本的几个库就行了！触摸屏的、鼠标的、键盘的以后再说！分别是：libQtGui.so libQtCore.so libQtNetwork.so 以及fonts下的字库
+　　为了防止错误，我一并把他们的相关链接文件so.4、 so.4.7、 so.4.7.2 都移植过去了！
+　　移植方法你可以使用nfs ！U盘！我用nfs速度太慢，非常不方便，索性用U盘拷过去了！因为这几个库小的不到1M，大的13M，U盘拷的还是很快的！比较让我费劲的是虚拟机不支持把链接文件拖拽到xp环境下！我只要在虚拟机里用邮件发到我的邮箱里，再在xp环境下把这些东西下下来，再通过U盘拷贝！曲折啊。。。我的虚拟机U盘不识别！
+　　1）从哪儿移植呢？
+　　从你虚拟机里编译安装arm版的QT库里面拷！..arm/lib下
+　　2）移植过去放在哪儿呢？
+　　最好是跟你在虚拟机里面的arm版QT所在目录一样，方便操作！看我的
+　　分别在开发板下新建目录：home/fengchao/qtenv/arm/lib
+　　home/fengchao/qtenv/arm/bin
+　　home/fengchao/qtenv/arm/lib/fonts
+　　把那些.so文件放到lib里面，把字库放到fonts里面！
+　　3.最重要的一步，设置环境变量！
+　　在开发板的根目录下执行：
+　　$ vi /etc/profile
+　　然后输入
+　　export QTDIR=/home/fengchao/qtenv/arm
+　　export PATH=$QTDIR/bin:$PATH
+　　export LD_LIBRARY_PATH=$QTDIR/lib:$LD_LIBRARY_PATH
+　　
+保存退出! ok !
+　　vi使用：打开文件之后，输入i，进入编辑模式，再按ESC退出编辑模式进入命令模式，输入：键入命令wq即保存退出，q退出
+　　
+4.然后把你编译好的hello这个可执行文件放到你的开发板上，随便哪儿吧
+　　然后执行
+　　./hello -qws
+　　然后你就可以看见开发板上有显示了！但是可能文字较小，如果有中文可能还是乱码，没事，咱一步步往下来。。。
+　　5.错误分析
+　　1）提示没有链接到字库
+　　QFontDatabase: Cannot find font directory /home/fengchao/qtenv/arm/lib/fonts - is Qt installed correctly?
+　　这个就是你没装好字库，好好检查一下，修改过来！
+　　2）提示没有QtGui.so no such file of directory
+　　也是因为你没有移植好这个库或者跟他链接的文件，再或者环境变量有误！
